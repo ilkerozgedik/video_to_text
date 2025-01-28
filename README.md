@@ -21,6 +21,16 @@ python video_to_text.py
 
 3. The transcript will be saved to `full_transcript.txt` by default.
 
+## Command Line Options
+
+- `--video_file`: Path to the input video file.
+- `--audio_file`: Path to the input audio file.
+- `--output_file`: Path to the output transcript file.
+- `--chunk_length`: Length of each audio chunk in minutes (default: 10).
+- `--model_size`: Size of the Whisper model to use (default: "base").
+- `--language`: Language of the audio (default: "en").
+- `--use_cuda`: Use CUDA for GPU acceleration (default: False).
+
 ## Functions
 
 - `convert_video_to_mp3(video_path: str, output_path: str) -> None`: Converts a video file to MP3 format.
@@ -42,6 +52,17 @@ You can also specify different input and output files:
 ```bash
 python video_to_text.py --video_file your_video.mp4 --output_file your_transcript.txt
 ```
+
+## Enhanced Features
+
+- Multi-language support with language detection
+- Parallel processing for faster transcription
+- Progress bars for all operations
+- Timestamp support in transcriptions
+- Multiple Whisper model sizes (tiny to large)
+- Logging system with file and console output
+- Retry mechanism for failed transcriptions
+- CUDA support for GPU acceleration
 
 ## License
 
