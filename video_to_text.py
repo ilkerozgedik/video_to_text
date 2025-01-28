@@ -1,5 +1,5 @@
 """
-Speech to Text converter for video files
+Speech to Text converter for video and audio files
 Requirements:
 pip install moviepy openai-whisper ffmpeg-python setuptools-rust pydub
 """
@@ -86,16 +86,37 @@ def cleanup_temp_files(chunk_files: List[str], mp3_file: str) -> None:
     except Exception as e:
         print(f"Error during cleanup: {str(e)}")
 
+def is_audio_file(file_path: str) -> bool:
+    """Check if the file is an audio file based on extension."""
+    audio_extensions = {'.mp3', '.wav', '.m4a', '.flac', '.aac', '.ogg'}
+    return os.path.splitext(file_path)[1].lower() in audio_extensions
+
+def process_input_file(input_file: str, mp3_file: str) -> None:
+    """Process input file based on its type."""
+    if is_audio_file(input_file):
+        if input_file.lower().endswith('.mp3'):
+            # If input is already MP3, just copy it
+            import shutil
+            shutil.copy2(input_file, mp3_file)
+            print(f"Using audio file directly: {input_file}")
+        else:
+            # Convert other audio formats to MP3
+            audio = AudioSegment.from_file(input_file)
+            audio.export(mp3_file, format="mp3")
+            print(f"Converted audio to MP3: {mp3_file}")
+    else:
+        convert_video_to_mp3(input_file, mp3_file)
+
 def main(
-    video_file: str = "input.mp4",
+    input_file: str = "input.mp4",
     output_file: str = "full_transcript.txt",
     model_size: str = "base"
 ) -> None:
-    """Main function to process video and generate transcript."""
+    """Main function to process video/audio and generate transcript."""
     mp3_file = "converted_audio.mp3"
     
     try:
-        convert_video_to_mp3(video_file, mp3_file)
+        process_input_file(input_file, mp3_file)
         chunk_files = split_audio_into_chunks(mp3_file)
         transcript = transcribe_audio_chunks(chunk_files, model_size)
         save_transcript(transcript, output_file)

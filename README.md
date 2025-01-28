@@ -1,6 +1,6 @@
-# Speech to Text Converter for Video Files
+# Speech to Text Converter for Video and Audio Files
 
-This project converts video files to text using the Whisper model. It extracts audio from video files, splits the audio into chunks, transcribes the chunks, and saves the transcript to a text file.
+This project converts video or audio files to text using the Whisper model. It processes the audio (either extracted from video or directly from audio files), splits it into chunks, transcribes the chunks, and saves the transcript to a text file.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ pip install moviepy openai-whisper ffmpeg-python setuptools-rust pydub
 
 ## Usage
 
-1. Place your video file in the project directory.
+1. Place your video or audio file in the project directory.
 2. Run the script with the default parameters:
 
 ```bash
