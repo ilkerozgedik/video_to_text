@@ -44,6 +44,8 @@ def parse_arguments() -> argparse.Namespace:
                        help="Number of parallel workers")
     parser.add_argument("--include_timestamps", "-t", action="store_true",
                        help="Include timestamps in output")
+    parser.add_argument("--no_cuda", action="store_true", 
+                       help="Disable CUDA even if available")
     return parser.parse_args()
 
 def convert_video_to_mp3(video_path: str, output_path: str) -> None:
@@ -114,10 +116,11 @@ def transcribe_audio_chunks(
     model_size: str = "base",
     num_workers: int = 2,
     language: Optional[str] = None,
-    include_timestamps: bool = False
+    include_timestamps: bool = False,
+    use_cuda: bool = True
 ) -> str:
     """Transcribe audio chunks using parallel processing."""
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if (torch.cuda.is_available() and use_cuda) else "cpu"
     model = whisper.load_model(model_size).to(device)
     
     full_transcript = []
@@ -192,6 +195,10 @@ def main() -> None:
     args = parse_arguments()
     setup_logging()
     
+    use_cuda = not args.no_cuda
+    device = "cuda" if (torch.cuda.is_available() and use_cuda) else "cpu"
+    logging.info(f"Using device: {device}")
+    
     # Create output directory if it doesn't exist
     Path(args.output_file).parent.mkdir(parents=True, exist_ok=True)
     
@@ -209,7 +216,8 @@ def main() -> None:
                 args.model_size,
                 args.num_workers,
                 args.language,
-                args.include_timestamps
+                args.include_timestamps,
+                use_cuda=use_cuda
             )
             pbar.update(1)
             
